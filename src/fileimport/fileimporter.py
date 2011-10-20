@@ -7,7 +7,7 @@
 Imports CSV files into Fusion Tables.
 """
 
-__author__ = 'kbrisbin@google.com (Kathryn Brisbin)'
+__author__ = 'kbrisbin@google.com (Kathryn Hurley)'
 
 
 from sql.sqlbuilder import SQL
@@ -42,12 +42,10 @@ class CSVImporter(Importer):
 
     return table_id
 
-
   def importMoreRows(self, filename, table_id):
     """ Imports more rows in a CSV file to an existing table. First row is a header """
     filehandle = csv.reader(open(filename, "rb"))
     return self._importRows(filehandle, table_id, filehandle.next())
-
 
   def _importRows(self, filehandle, table_id, cols):
     """ Helper function to upload rows of data in a CSV file to a table """
@@ -67,11 +65,11 @@ class CSVImporter(Importer):
         except:
           print str(sys.exc_info()[1])
           print full_query + "\n"
-        time.sleep(1)
-          
+        time.sleep(5)
+
         current_row = 0
         queries = []
-        
+
     if len(queries) > 0:
       full_query = ';'.join(queries)
       try:
