@@ -7,7 +7,7 @@
 Issue requests to Fusion Tables.
 """
 
-__author__ = 'kbrisbin@google.com (Kathryn Brisbin)'
+__author__ = 'kbrisbin@google.com (Kathryn Hurley)'
 
 import urllib2, urllib
 try:
@@ -15,6 +15,7 @@ try:
   import authorization.oauth
 except: pass
 
+URL = "https://www.google.com/fusiontables/api/query"
 
 class FTClient():
   def _get(self, query): pass
@@ -43,13 +44,12 @@ class ClientLoginFTClient(FTClient):
 
   def __init__(self, token):
     self.auth_token = token
-    self.request_url = "https://www.google.com/fusiontables/api/query"
 
   def _get(self, query):
     headers = {
       'Authorization': 'GoogleLogin auth=' + self.auth_token,
     }
-    serv_req = urllib2.Request(url="%s?%s" % (self.request_url, query),
+    serv_req = urllib2.Request(url="%s?%s" % (URL, query),
                                headers=headers)
     serv_resp = urllib2.urlopen(serv_req)
     return serv_resp.read()
@@ -60,7 +60,7 @@ class ClientLoginFTClient(FTClient):
       'Content-Type': 'application/x-www-form-urlencoded',
     }
 
-    serv_req = urllib2.Request(url=self.request_url, data=query, headers=headers)
+    serv_req = urllib2.Request(url=URL, data=query, headers=headers)
     serv_resp = urllib2.urlopen(serv_req)
     return serv_resp.read()
 
@@ -71,14 +71,12 @@ class OAuthFTClient(FTClient):
     self.consumer_key = consumer_key
     self.consumer_secret = consumer_secret
     self.token = oauth2.Token(oauth_token, oauth_token_secret)
-    
-    self.scope = "https://www.google.com/fusiontables/api/query"
 
 
   def _get(self, query):
     consumer = oauth2.Consumer(self.consumer_key, self.consumer_secret)
     client = oauth2.Client(consumer, self.token)
-    resp, content = client.request(uri="%s?%s" % (self.scope, query),
+    resp, content = client.request(uri="%s?%s" % (URL, query),
                          method="GET")
     return content
 
@@ -86,7 +84,7 @@ class OAuthFTClient(FTClient):
   def _post(self, query):
     consumer = oauth2.Consumer(self.consumer_key, self.consumer_secret)
     client = oauth2.Client(consumer, self.token)
-    resp, content = client.request(uri=self.scope,
+    resp, content = client.request(uri=URL,
                                    method="POST",
                                    body=query)
     return content

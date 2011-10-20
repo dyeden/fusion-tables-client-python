@@ -2,11 +2,11 @@
 #
 # Copyright (C) 2010 Google Inc.
 
-""" OAuth Login.
+""" OAuth 1.0 Authorization.
 
 Uses python-oauth2 library to perform 3-way handshake.
 
-1. Create a new instance OAuth
+1. Create a new instance OAuth 1.0
 2. Call the generateAuthorizationURL method to create
 the authorization URL
 3. Once the user grants access
@@ -14,13 +14,13 @@ the authorization URL
 token.
 """
 
-__author__ = 'kbrisbin@google.com (Kathryn Brisbin)'
+__author__ = 'kbrisbin@google.com (Kathryn Hurley)'
 
 import oauth2
 import urllib
 
 OAUTH_SETTINGS = {
-  'scope' : "https://www.google.com/fusiontables/api/query",
+  'scope' : "https://www.googleapis.com/auth/fusiontables",
   'request_token_url':"https://www.google.com/accounts/OAuthGetRequestToken",
   'authorize_url':'https://www.google.com/accounts/OAuthAuthorizeToken',
   'access_token_url':'https://www.google.com/accounts/OAuthGetAccessToken',

@@ -5,7 +5,7 @@
 """ ClientLogin.
 """
 
-__author__ = 'kbrisbin@google.com (Kathryn Brisbin)'
+__author__ = 'kbrisbin@google.com (Kathryn Hurley)'
 
 import urllib, urllib2
 

@@ -7,10 +7,8 @@
 Builds SQL strings to pass to FTClient query method.
 """
 
-__author__ = 'kbrisbin@google.com (Kathryn Brisbin)'
+__author__ = 'kbrisbin@google.com (Kathryn Hurley)'
 
-
-import re
 
 class SQL:
   """ Helper class for building SQL queries """
@@ -81,35 +79,62 @@ class SQL:
     return select
 
 
-  def update(self, table_id, cols, values, row_id):
+  def update(self, table_id, cols, values=None, row_id=None):
     """ Build an UPDATE sql statement.
 
     Args:
       table_id: the id of the table
-      cols: the columns to update
-      values: the new values
+      cols: list of columns to update
+      values: list of the new values
+      row_id: the id of the row to update
+
+      OR if values is None and type cols is a dictionary -
+
+      table_id: the id of the table
+      cols: dictionary of column name to value pairs
       row_id: the id of the row to update
 
     Returns:
       the sql statement
     """
-    if len(cols) != len(values): return None
-    updateStatement = ""
-    count = 1
-    for i in range(len(cols)):
-      updateStatement = "%s'%s' = " % (updateStatement, cols[i])
-      if type(values[i]).__name__ == 'int':
-        updateStatement = "%s%d" % (updateStatement, values[i])
-      elif type(values[i]).__name__ == 'float':
-        updateStatement = "%s%f" % (updateStatement, values[i])
-      else:
-        updateStatement = "%s'%s'" % (updateStatement, 
-                                      values[i].encode('string-escape'))
+    if row_id == None: return None
 
-      if count < len(cols): updateStatement = "%s," % (updateStatement)
-      count += 1
+    if type(cols) == type({}):
+      updateStatement = ""
+      count = 1
+      for col,value in cols.iteritems():
+        if type(value).__name__ == 'int':
+          updateStatement = '%s%s=%d' % (updateStatement, col, value)
+        elif type(value).__name__ == 'float':
+          updateStatement = '%s%s=%f' % (updateStatement, col, value)
+        else:
+          updateStatement = "%s%s='%s'" % (updateStatement, col,
+                                     value.encode('string-escape'))
 
-    return "UPDATE %d SET %s WHERE ROWID = '%d'" % (table_id, updateStatement, row_id)
+        if count < len(cols): updateStatement = "%s," % (updateStatement)
+        count += 1
+  
+      return "UPDATE %d SET %s WHERE ROWID = '%d'" % (table_id,
+          updateStatement, row_id)
+
+    else:
+      if len(cols) != len(values): return None
+      updateStatement = ""
+      count = 1
+      for i in range(len(cols)):
+        updateStatement = "%s'%s' = " % (updateStatement, cols[i])
+        if type(values[i]).__name__ == 'int':
+          updateStatement = "%s%d" % (updateStatement, values[i])
+        elif type(values[i]).__name__ == 'float':
+          updateStatement = "%s%f" % (updateStatement, values[i])
+        else:
+          updateStatement = "%s'%s'" % (updateStatement, 
+                                        values[i].encode('string-escape'))
+  
+        if count < len(cols): updateStatement = "%s," % (updateStatement)
+        count += 1
+  
+      return "UPDATE %d SET %s WHERE ROWID = '%d'" % (table_id, updateStatement, row_id)
 
   def delete(self, table_id, row_id):
     """ Build DELETE sql statement.
